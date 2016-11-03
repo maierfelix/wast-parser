@@ -9,25 +9,32 @@ export let PunctuatorKind = {};
 
   Label[Label["Module"] = ++idx] = "Module";
   Label[Label["Literal"] = ++idx] = "Literal";
+  Label[Label["TypeLiteral"] = ++idx] = "TypeLiteral";
 
-  Label[Label["IfStatement"] = ++idx] = "IfStatement";
-  Label[Label["BreakStatement"] = ++idx] = "BreakStatement";
-  Label[Label["BlockStatement"] = ++idx] = "BlockStatement";
-  Label[Label["ImportStatement"] = ++idx] = "ImportStatement";
-  Label[Label["ExportStatement"] = ++idx] = "ExportStatement";
-  Label[Label["ReturnStatement"] = ++idx] = "ReturnStatement";
-  Label[Label["DoWhileStatement"] = ++idx] = "DoWhileStatement";
-  Label[Label["ContinueStatement"] = ++idx] = "ContinueStatement";
-  Label[Label["ExpressionStatement"] = ++idx] = "ExpressionStatement";
+  Label[Label["If"] = ++idx] = "If";
+  Label[Label["Break"] = ++idx] = "Break";
+  Label[Label["Block"] = ++idx] = "Block";
+  Label[Label["Import"] = ++idx] = "Import";
+  Label[Label["Export"] = ++idx] = "Export";
+  Label[Label["Return"] = ++idx] = "Return";
+  Label[Label["Binary"] = ++idx] = "Binary";
+  Label[Label["DoWhile"] = ++idx] = "DoWhile";
+  Label[Label["Continue"] = ++idx] = "Continue";
+  Label[Label["Expression"] = ++idx] = "Expression";
 
-  Label[Label["CallExpression"] = ++idx] = "CallExpression";
-  Label[Label["SequenceExpression"] = ++idx] = "SequenceExpression";
-  Label[Label["AssignmentExpression"] = ++idx] = "AssignmentExpression";
+  Label[Label["Call"] = ++idx] = "Call";
+  Label[Label["Select"] = ++idx] = "Select";
+  Label[Label["SetLocal"] = ++idx] = "SetLocal";
+  Label[Label["GetLocal"] = ++idx] = "GetLocal";
+  Label[Label["Sequence"] = ++idx] = "Sequence";
+  Label[Label["Assignment"] = ++idx] = "Assignment";
 
-  Label[Label["MemoryDeclaration"] = ++idx] = "MemoryDeclaration";
-  Label[Label["VariableDeclaration"] = ++idx] = "VariableDeclaration";
-  Label[Label["FunctionDeclaration"] = ++idx] = "FunctionDeclaration";
-  Label[Label["ParameterDeclaration"] = ++idx] = "ParameterDeclaration";
+  Label[Label["Local"] = ++idx] = "Local";
+  Label[Label["Memory"] = ++idx] = "Memory";
+  Label[Label["Constant"] = ++idx] = "Constant";
+  Label[Label["Variable"] = ++idx] = "Variable";
+  Label[Label["Function"] = ++idx] = "Function";
+  Label[Label["Parameter"] = ++idx] = "Parameter";
 
 })(NodeKind);
 
@@ -76,6 +83,7 @@ export let PunctuatorKind = {};
   Label[Label["return"] = ++idx] = "RETURN";
   Label[Label["block"] = ++idx] = "BLOCK";
   Label[Label["break"] = ++idx] = "BREAK";
+  Label[Label["local"] = ++idx] = "LOCAL";
   Label[Label["continue"] = ++idx] = "CONTINUE";
 
   Label[Label["loop"] = ++idx] = "LOOP";
@@ -117,6 +125,7 @@ export let PunctuatorKind = {};
   Label[Label["store16"] = ++idx] = "STORE16";
   Label[Label["store32"] = ++idx] = "STORE32";
 
+  // binop
   Label[Label["add"] = ++idx] = "ADD";
   Label[Label["sub"] = ++idx] = "SUB";
   Label[Label["mul"] = ++idx] = "MUL";
@@ -125,7 +134,6 @@ export let PunctuatorKind = {};
   Label[Label["div_u"] = ++idx] = "DIV_U";
   Label[Label["rem_s"] = ++idx] = "REM_S";
   Label[Label["rem_u"] = ++idx] = "REM_U";
-
   Label[Label["and"] = ++idx] = "AND";
   Label[Label["or"] = ++idx] = "OR";
   Label[Label["xor"] = ++idx] = "XOR";
@@ -135,6 +143,7 @@ export let PunctuatorKind = {};
   Label[Label["rotl"] = ++idx] = "ROTL";
   Label[Label["rotr"] = ++idx] = "ROTR";
 
+  // relop
   Label[Label["eq"] = ++idx] = "EQ";
   Label[Label["ne"] = ++idx] = "NE";
   Label[Label["lt"] = ++idx] = "LT";
@@ -150,6 +159,7 @@ export let PunctuatorKind = {};
   Label[Label["ge_s"] = ++idx] = "GE_S";
   Label[Label["ge_u"] = ++idx] = "GE_U";
 
+  // unary
   Label[Label["neg"] = ++idx] = "NEG";
   Label[Label["copysign"] = ++idx] = "COPYSIGN";
   Label[Label["ceil"] = ++idx] = "CEIL";

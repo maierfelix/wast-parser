@@ -6,7 +6,13 @@ import {
   getNameByLabel
 } from "../labels";
 
+import {
+  inherit
+} from "../utils";
+
 import Node from "../nodes";
+
+import * as parse from "./parse";
 
 export default class Parser {
 
@@ -41,6 +47,17 @@ export default class Parser {
     );
   }
 
+  back() {
+    if (this.idx >= 1) {
+      // go 2 back, so we can go 1 forward
+      // to simulate real back behaviour
+      this.idx -= 2;
+      this.next();
+      return (true);
+    }
+    return (false);
+  }
+
   next() {
     if (this.idx < this.limit) {
       this.current = this.tokens[++this.idx];
@@ -60,153 +77,57 @@ export default class Parser {
 
   createNode(kind) {
     let node = new Node[NodeKind[kind]]();
+    node.kind = getNameByLabel(kind);
     return (node);
   }
 
-  parseModule() {
-    let node = this.createNode(NodeKind.Module);
-    this.expect(PP.LPAREN);
-    this.expect(KK.MODULE);
-    node.body = this.parseBlock();
-    this.expect(PP.RPAREN);
-    return (node);
+  // TODO: make type dependant
+  isOperator(token) {
+    let kind = token.kind;
+    return (
+      kind === KK.ADD ||
+      kind === KK.SUB ||
+      kind === KK.MUL ||
+      kind === KK.DIV ||
+      kind === KK.DIV_S ||
+      kind === KK.DIV_U ||
+      kind === KK.REM_S ||
+      kind === KK.REM_U ||
+      kind === KK.AND ||
+      kind === KK.OR ||
+      kind === KK.XOR ||
+      kind === KK.SHL ||
+      kind === KK.SHR_S ||
+      kind === KK.SHR_U ||
+      kind === KK.ROTL ||
+      kind === KK.ROTR ||
+      kind === KK.EQ ||
+      kind === KK.NE ||
+      kind === KK.LT ||
+      kind === KK.LT_S ||
+      kind === KK.LT_U ||
+      kind === KK.LE ||
+      kind === KK.LE_S ||
+      kind === KK.LE_U ||
+      kind === KK.GT ||
+      kind === KK.GT_S ||
+      kind === KK.GT_U ||
+      kind === KK.GE ||
+      kind === KK.GE_S ||
+      kind === KK.GE_U
+    );
   }
 
-  parseBlock() {
-    let nodes = [];
-    let node = null;
-    while (true) {
-      if (!this.peek(PP.LPAREN)) break;
-      node = this.parseModuleField();
-      if (node === null) break;
-      nodes.push(node);
-    };
-    return (nodes);
-  }
-
-  /**
-    WASM_MODULE_FIELD_TYPE_FUNC,
-    WASM_MODULE_FIELD_TYPE_GLOBAL,
-    WASM_MODULE_FIELD_TYPE_IMPORT,
-    WASM_MODULE_FIELD_TYPE_EXPORT,
-    WASM_MODULE_FIELD_TYPE_FUNC_TYPE,
-    WASM_MODULE_FIELD_TYPE_TABLE,
-    WASM_MODULE_FIELD_TYPE_ELEM_SEGMENT,
-    WASM_MODULE_FIELD_TYPE_MEMORY,
-    WASM_MODULE_FIELD_TYPE_DATA_SEGMENT,
-    WASM_MODULE_FIELD_TYPE_START
-  */
-  parseModuleField() {
-    this.expect(PP.LPAREN);
-    let kind = this.current.kind;
-    let node = null;
-    switch (kind) {
-      case KK.FUNC:
-        node = this.parseFunctionDeclaration();
-      break;
-      case KK.MEMORY:
-        node = this.parseMemoryStatement();
-      break;
-      case KK.IMPORT:
-        node = this.parseImportStatement();
-      break;
-      case KK.EXPORT:
-        node = this.parseExportStatement();
-      break;
-      default:
-        throw new Error(`Invalid statement kind ${getNameByLabel(kind)}`);
-      break;
-    };
-    this.expect(PP.RPAREN);
-    return (node);
-  }
-
-  /**
-    WASM_EXPR_TYPE_BINARY,
-    WASM_EXPR_TYPE_BLOCK,
-    WASM_EXPR_TYPE_BR,
-    WASM_EXPR_TYPE_BR_IF,
-    WASM_EXPR_TYPE_BR_TABLE,
-    WASM_EXPR_TYPE_CALL,
-    WASM_EXPR_TYPE_CALL_INDIRECT,
-    WASM_EXPR_TYPE_COMPARE,
-    WASM_EXPR_TYPE_CONST,
-    WASM_EXPR_TYPE_CONVERT,
-    WASM_EXPR_TYPE_CURRENT_MEMORY,
-    WASM_EXPR_TYPE_DROP,
-    WASM_EXPR_TYPE_GET_GLOBAL,
-    WASM_EXPR_TYPE_GET_LOCAL,
-    WASM_EXPR_TYPE_GROW_MEMORY,
-    WASM_EXPR_TYPE_IF,
-    WASM_EXPR_TYPE_LOAD,
-    WASM_EXPR_TYPE_LOOP,
-    WASM_EXPR_TYPE_NOP,
-    WASM_EXPR_TYPE_RETURN,
-    WASM_EXPR_TYPE_SELECT,
-    WASM_EXPR_TYPE_SET_GLOBAL,
-    WASM_EXPR_TYPE_SET_LOCAL,
-    WASM_EXPR_TYPE_STORE,
-    WASM_EXPR_TYPE_TEE_LOCAL,
-    WASM_EXPR_TYPE_UNARY,
-    WASM_EXPR_TYPE_UNREACHABLE
-  */
-  parseExpression() {
-
-  }
-
-  parseFunctionDeclaration() {
-    this.expect(KK.FUNC);
-    let node = this.createNode(NodeKind.FunctionDeclaration);
-    node.name = this.parseLiteral();
-    // parameter or result
-    if (this.peek(PP.LPAREN)) {
-      
-    }
-    return (node);
-  }
-
-  parseMemoryStatement() {
-    this.expect(KK.MEMORY);
-    let node = this.createNode(NodeKind.MemoryDeclaration);
-    if (this.peek(TT.NumericLiteral)) {
-      node.initial = this.parseLiteral();
-    }
-    if (node.initial !== null && this.peek(TT.NumericLiteral)) {
-      node.max = this.parseLiteral();
-    }
-    return (node);
-  }
-
-  parseImportStatement() {
-    this.expect(KK.IMPORT);
-    console.log(this.current);
-  }
-
-  parseExportStatement() {
-    this.expect(KK.EXPORT);
-    let node = this.createNode(NodeKind.ExportStatement);
-    if (this.peek(TT.StringLiteral)) {
-      node.name = this.parseLiteral();
-    }
-    if (this.peek(TT.Identifier)) {
-      node.attachment = this.parseLiteral();
-    }
-    return (node);
-  }
-
-  parseLiteral() {
-    if (
-      !this.peek(TT.Identifier) &&
-      !this.peek(TT.StringLiteral) &&
-      !this.peek(TT.NumericLiteral)
-    ) throw new Error(`Invalid literal token ${getNameByLabel(this.current.kind)}`);
-    let node = this.createNode(NodeKind.Literal);
-    let value = this.current.value;
-    node.type = this.current.kind;
-    node.raw = value;
-    node.value = node.type === TT.NumericLiteral ? parseFloat(value) : value;
-    this.next();
-    return (node);
+  isTypeLiteral(token) {
+    let kind = token.kind;
+    return (
+      kind === KK.I32 ||
+      kind === KK.I64 ||
+      kind === KK.F32 ||
+      kind === KK.F64
+    );
   }
 
 }
+
+inherit(Parser, parse);

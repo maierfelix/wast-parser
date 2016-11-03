@@ -15,8 +15,9 @@ let parse = (str) => {
 
 };
 
+let fs = require("fs");
 let path = "main.wast";
-let input = require("fs").readFileSync(process.cwd() + "/" + path, "utf8");
+let input = fs.readFileSync(process.cwd() + "/" + path, "utf8");
 
 ((str) => {
 
@@ -28,5 +29,7 @@ let input = require("fs").readFileSync(process.cwd() + "/" + path, "utf8");
   };
 
   let ast = parse(str);
+
+  fs.writeFileSync(path.replace("wast", "json"), JSON.stringify(ast, null, 2), "utf8");
 
 })(input);

@@ -11,7 +11,7 @@ export default class Node {
       class Module {
         constructor() {
           this.kind = Kind.Module;
-          this.body = [];
+          this.body = null;
         }
       }
     );
@@ -30,11 +30,22 @@ export default class Node {
     );
   }
 
-  static get IfStatement() {
+  static get TypeLiteral() {
     return (
-      class IfStatement {
+      class TypeLiteral {
         constructor() {
-          this.kind = Kind.IfStatement;
+          this.kind = Kind.TypeLiteral;
+          this.value = null;
+        }
+      }
+    );
+  }
+
+  static get If() {
+    return (
+      class If {
+        constructor() {
+          this.kind = Kind.If;
           this.condition = null;
           this.consequent = null;
           this.alternate = null;
@@ -43,11 +54,95 @@ export default class Node {
     );
   }
 
-  static get MemoryDeclaration() {
+  static get Return() {
     return (
-      class MemoryDeclaration {
+      class Return {
         constructor() {
-          this.kind = Kind.MemoryDeclaration;
+          this.kind = Kind.Return;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get Select() {
+    return (
+      class Select {
+        constructor() {
+          this.kind = Kind.Select;
+          this.condition = null;
+          this.consequent = null;
+          this.alternate = null;
+        }
+      }
+    );
+  }
+
+  static get GetLocal() {
+    return (
+      class GetLocal {
+        constructor() {
+          this.kind = Kind.GetLocal;
+          this.id = null;
+        }
+      }
+    );
+  }
+
+  static get SetLocal() {
+    return (
+      class SetLocal {
+        constructor() {
+          this.kind = Kind.SetLocal;
+          this.id = null;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get Local() {
+    return (
+      class Local {
+        constructor() {
+          this.kind = Kind.Local;
+          this.name = null;
+          this.type = null;
+        }
+      }
+    );
+  }
+
+  static get Binary() {
+    return (
+      class Binary {
+        constructor() {
+          this.kind = Kind.Binary;
+          this.left = null;
+          this.right = null;
+          this.operator = null;
+        }
+      }
+    );
+  }
+
+  static get Constant() {
+    return (
+      class Constant {
+        constructor() {
+          this.kind = Kind.Constant;
+          this.type = null;
+          this.value = null;
+        }
+      }
+    );
+  }
+
+  static get Memory() {
+    return (
+      class Memory {
+        constructor() {
+          this.kind = Kind.Memory;
           this.max = null;
           this.initial = null;
         }
@@ -55,13 +150,13 @@ export default class Node {
     );
   }
 
-  static get FunctionDeclaration() {
+  static get Function() {
     return (
-      class FunctionDeclaration {
+      class Function {
         constructor() {
-          this.kind = Kind.FunctionDeclaration;
+          this.kind = Kind.Function;
           this.args = [];
-          this.body = [];
+          this.body = null;
           this.name = null;
           this.result = null;
         }
@@ -69,13 +164,25 @@ export default class Node {
     );
   }
 
-  static get ExportStatement() {
+  static get Export() {
     return (
-      class ExportStatement {
+      class Export {
         constructor() {
-          this.kind = Kind.ExportStatement;
+          this.kind = Kind.Export;
           this.name = null;
-          this.attachment = null;
+          this.id = null;
+        }
+      }
+    );
+  }
+
+  static get Parameter() {
+    return (
+      class Parameter {
+        constructor() {
+          this.kind = Kind.Parameter;
+          this.name = null;
+          this.type = null;
         }
       }
     );
