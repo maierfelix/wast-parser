@@ -1,0 +1,39 @@
+{
+  "name": "wast-parser",
+  "version": "0.0.1",
+  "description": "WAST parser",
+  "license": "GNU",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/maierfelix/wast-parser.git"
+  },
+  "keywords": [],
+  "homepage": "https://github.com/maierfelix/wast-parser#readme",
+  "author": "Felix Maier <xilefmai@gmail.com>",
+  "contributors": [
+    "Felix Maier <xilefmai@gmail.com> (https://github.com/maierfelix)"
+  ],
+  "bugs": {
+    "url": "https://github.com/maierfelix/wast-parser/issues"
+  },
+  "scripts": {
+    "start": "babel-node --presets=es2015 src/index.js"
+  },
+  "engines": {
+    "node": ">= 4.x"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0"
+  },
+  "dependencies": {},
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ]
+  }
+}
