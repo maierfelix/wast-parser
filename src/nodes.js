@@ -78,6 +78,18 @@ export default class Node {
     );
   }
 
+  static get Block() {
+    return (
+      class Block {
+        constructor() {
+          this.kind = Kind.Block;
+          this.id = null;
+          this.body = null;
+        }
+      }
+    );
+  }
+
   static get GetLocal() {
     return (
       class GetLocal {

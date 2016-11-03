@@ -40,17 +40,17 @@ export function parseFieldList() {
 }
 
 /**
-  WASM_MODULE_FIELD_TYPE_FUNC,
-  WASM_MODULE_FIELD_TYPE_GLOBAL,
-  WASM_MODULE_FIELD_TYPE_IMPORT,
-  WASM_MODULE_FIELD_TYPE_EXPORT,
-  WASM_MODULE_FIELD_TYPE_FUNC_TYPE,
-  WASM_MODULE_FIELD_TYPE_TABLE,
-  WASM_MODULE_FIELD_TYPE_ELEM_SEGMENT,
-  WASM_MODULE_FIELD_TYPE_MEMORY,
-  WASM_MODULE_FIELD_TYPE_DATA_SEGMENT,
-  WASM_MODULE_FIELD_TYPE_START
-*/
+  [✓] WASM_MODULE_FIELD_TYPE_FUNC,
+  [☓] WASM_MODULE_FIELD_TYPE_GLOBAL,
+  [☓] WASM_MODULE_FIELD_TYPE_IMPORT,
+  [✓] WASM_MODULE_FIELD_TYPE_EXPORT,
+  [☓] WASM_MODULE_FIELD_TYPE_FUNC_TYPE,
+  [☓] WASM_MODULE_FIELD_TYPE_TABLE,
+  [☓] WASM_MODULE_FIELD_TYPE_ELEM_SEGMENT,
+  [✓] WASM_MODULE_FIELD_TYPE_MEMORY,
+  [☓] WASM_MODULE_FIELD_TYPE_DATA_SEGMENT,
+  [☓] WASM_MODULE_FIELD_TYPE_START
+ */
 export function parseModuleField() {
   this.expect(PP.LPAREN);
   let kind = this.current.kind;
@@ -77,39 +77,42 @@ export function parseModuleField() {
 }
 
 /**
-  WASM_EXPR_TYPE_BINARY,
-  WASM_EXPR_TYPE_BLOCK,
-  WASM_EXPR_TYPE_BR,
-  WASM_EXPR_TYPE_BR_IF,
-  WASM_EXPR_TYPE_BR_TABLE,
-  WASM_EXPR_TYPE_CALL,
-  WASM_EXPR_TYPE_CALL_INDIRECT,
-  WASM_EXPR_TYPE_COMPARE,
-  WASM_EXPR_TYPE_CONST,
-  WASM_EXPR_TYPE_CONVERT,
-  WASM_EXPR_TYPE_CURRENT_MEMORY,
-  WASM_EXPR_TYPE_DROP,
-  WASM_EXPR_TYPE_GET_GLOBAL,
-  WASM_EXPR_TYPE_GET_LOCAL,
-  WASM_EXPR_TYPE_GROW_MEMORY,
-  WASM_EXPR_TYPE_IF,
-  WASM_EXPR_TYPE_LOAD,
-  WASM_EXPR_TYPE_LOOP,
-  WASM_EXPR_TYPE_NOP,
-  WASM_EXPR_TYPE_RETURN,
-  WASM_EXPR_TYPE_SELECT,
-  WASM_EXPR_TYPE_SET_GLOBAL,
-  WASM_EXPR_TYPE_SET_LOCAL,
-  WASM_EXPR_TYPE_STORE,
-  WASM_EXPR_TYPE_TEE_LOCAL,
-  WASM_EXPR_TYPE_UNARY,
-  WASM_EXPR_TYPE_UNREACHABLE
-*/
+  [✓] WASM_EXPR_TYPE_BINARY,
+  [☓] WASM_EXPR_TYPE_BLOCK,
+  [☓] WASM_EXPR_TYPE_BR,
+  [☓] WASM_EXPR_TYPE_BR_IF,
+  [☓] WASM_EXPR_TYPE_BR_TABLE,
+  [☓] WASM_EXPR_TYPE_CALL,
+  [☓] WASM_EXPR_TYPE_CALL_INDIRECT,
+  [☓] WASM_EXPR_TYPE_COMPARE,
+  [✓] WASM_EXPR_TYPE_CONST,
+  [☓] WASM_EXPR_TYPE_CONVERT,
+  [☓] WASM_EXPR_TYPE_CURRENT_MEMORY,
+  [☓] WASM_EXPR_TYPE_DROP,
+  [☓] WASM_EXPR_TYPE_GET_GLOBAL,
+  [✓] WASM_EXPR_TYPE_GET_LOCAL,
+  [☓] WASM_EXPR_TYPE_GROW_MEMORY,
+  [✓] WASM_EXPR_TYPE_IF,
+  [☓] WASM_EXPR_TYPE_LOAD,
+  [☓] WASM_EXPR_TYPE_LOOP,
+  [☓] WASM_EXPR_TYPE_NOP,
+  [✓] WASM_EXPR_TYPE_RETURN,
+  [☓] WASM_EXPR_TYPE_SELECT,
+  [☓] WASM_EXPR_TYPE_SET_GLOBAL,
+  [✓] WASM_EXPR_TYPE_SET_LOCAL,
+  [☓] WASM_EXPR_TYPE_STORE,
+  [☓] WASM_EXPR_TYPE_TEE_LOCAL,
+  [☓] WASM_EXPR_TYPE_UNARY,
+  [☓] WASM_EXPR_TYPE_UNREACHABLE
+ */
 export function parseField() {
   this.expect(PP.LPAREN);
   let kind = this.current.kind;
   let node = null;
   switch (kind) {
+    case KK.BLOCK:
+      node = this.parseBlock();
+    break;
     case KK.IF:
       node = this.parseIf();
     break;
@@ -142,6 +145,13 @@ export function parseField() {
   return (node);
 }
 
+export function parseBlock() {
+  this.expect(KK.BLOCK);
+  let node = this.createNode(NodeKind.Block);
+  node.body = this.parseFieldList();
+  return (node);
+}
+
 export function parseExpression() {
   let type = this.parseTypeLiteral();
   this.expect(PP.DOT);
@@ -158,8 +168,7 @@ export function parseExpression() {
     node.left = this.parseField();
     node.right = this.parseField();
     return (node);
-  }
-  else {
+  } else {
     throw new Error(`Sth went prty wrong bru`);
   }
 }
