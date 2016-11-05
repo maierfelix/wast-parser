@@ -12,11 +12,14 @@ export let PunctuatorKind = {};
   Label[Label["TypeLiteral"] = ++idx] = "TypeLiteral";
 
   Label[Label["If"] = ++idx] = "If";
+  Label[Label["Loop"] = ++idx] = "Loop";
   Label[Label["Break"] = ++idx] = "Break";
+  Label[Label["BreakIf"] = ++idx] = "BreakIf";
   Label[Label["Block"] = ++idx] = "Block";
   Label[Label["Import"] = ++idx] = "Import";
   Label[Label["Export"] = ++idx] = "Export";
   Label[Label["Return"] = ++idx] = "Return";
+  Label[Label["Unary"] = ++idx] = "Unary";
   Label[Label["Binary"] = ++idx] = "Binary";
   Label[Label["DoWhile"] = ++idx] = "DoWhile";
   Label[Label["Continue"] = ++idx] = "Continue";
@@ -35,6 +38,10 @@ export let PunctuatorKind = {};
   Label[Label["Variable"] = ++idx] = "Variable";
   Label[Label["Function"] = ++idx] = "Function";
   Label[Label["Parameter"] = ++idx] = "Parameter";
+
+  Label[Label["Invoke"] = ++idx] = "Invoke";
+  Label[Label["AssertTrap"] = ++idx] = "AssertTrap";
+  Label[Label["AssertReturn"] = ++idx] = "AssertReturn";
 
 })(NodeKind);
 
@@ -69,6 +76,7 @@ export let PunctuatorKind = {};
   Label[Label["export"] = ++idx] = "EXPORT";
   Label[Label["invoke"] = ++idx] = "INVOKE";
   Label[Label["if"] = ++idx] = "IF";
+  Label[Label["then"] = ++idx] = "THEN";
   Label[Label["else"] = ++idx] = "ELSE";
 
   Label[Label["nop"] = ++idx] = "NOP";
@@ -107,23 +115,32 @@ export let PunctuatorKind = {};
   Label[Label["grow_memory"] = ++idx] = "GROW_MEMORY";
   Label[Label["current_memory"] = ++idx] = "CURRENT_MEMORY";
 
+  Label[Label["assert_return"] = ++idx] = "ASSERT_RETURN";
+
   Label[Label["i32"] = ++idx] = "I32";
   Label[Label["i64"] = ++idx] = "I64";
   Label[Label["f32"] = ++idx] = "F32";
   Label[Label["f64"] = ++idx] = "F64";
 
   Label[Label["load"] = ++idx] = "LOAD";
+  Label[Label["load8"] = ++idx] = "LOAD8";
   Label[Label["load8_s"] = ++idx] = "LOAD8_S";
   Label[Label["load8_u"] = ++idx] = "LOAD8_U";
+  Label[Label["load16"] = ++idx] = "LOAD16";
   Label[Label["load16_s"] = ++idx] = "LOAD16_S";
   Label[Label["load16_u"] = ++idx] = "LOAD16_U";
+  Label[Label["load32"] = ++idx] = "LOAD32";
   Label[Label["load32_s"] = ++idx] = "LOAD32_S";
   Label[Label["load32_u"] = ++idx] = "LOAD32_U";
+  Label[Label["load64"] = ++idx] = "LOAD64";
+  Label[Label["load64_s"] = ++idx] = "LOAD64_S";
+  Label[Label["load64_u"] = ++idx] = "LOAD64_U";
 
   Label[Label["store"] = ++idx] = "STORE";
   Label[Label["store8"] = ++idx] = "STORE8";
   Label[Label["store16"] = ++idx] = "STORE16";
   Label[Label["store32"] = ++idx] = "STORE32";
+  Label[Label["store64"] = ++idx] = "STORE64";
 
   // binop
   Label[Label["add"] = ++idx] = "ADD";

@@ -69,7 +69,7 @@ export function parseModuleField() {
       node = this.parseExport();
     break;
     default:
-      throw new Error(`Invalid statement kind ${getNameByLabel(kind)}`);
+      this.throw(`Invalid statement kind ${getNameByLabel(kind)}`, this.current);
     break;
   };
   this.expect(PP.RPAREN);
@@ -113,8 +113,20 @@ export function parseField() {
     case KK.BLOCK:
       node = this.parseBlock();
     break;
+    case KK.LOOP:
+      node = this.parseLoop();
+    break;
+    case KK.CALL:
+      node = this.parseCall();
+    break;
     case KK.IF:
       node = this.parseIf();
+    break;
+    case KK.BR:
+      node = this.parseBreak();
+    break;
+    case KK.BR_IF:
+      node = this.parseBreakIf();
     break;
     case KK.LOCAL:
       node = this.parseLocal();
@@ -134,26 +146,99 @@ export function parseField() {
     case KK.TEE_LOCAL:
       node = this.parseTeeLocal();
     break;
+    case KK.INVOKE:
+      node = this.parseInvoke();
+    break;
+    case KK.ASSERT_TRAP:
+      node = this.parseAssertTrap();
+    break;
+    case KK.ASSERT_RETURN:
+      node = this.parseAssertReturn();
+    break;
+    case KK.ELSE:
+    case KK.THEN:
+      node = this.parseElse();
+    break;
     default:
       if (this.isTypeLiteral(this.current)) {
         node = this.parseExpression();
       }
-      else throw new Error(`Invalid expression kind ${getNameByLabel(kind)}`);
+      else this.throw(`Invalid expression kind ${getNameByLabel(kind)}`, this.current);
     break;
   };
   this.expect(PP.RPAREN);
   return (node);
 }
 
+export function parseInvoke() {
+  this.expect(KK.INVOKE);
+  let node = this.createNode(NodeKind.Invoke);
+  node.name = this.parseLiteral();
+  node.expressions = this.parseFieldList();
+  return (node);
+}
+
+export function parseAssertTrap() {
+  this.expect(KK.ASSERT_RETURN);
+  let node = this.createNode(NodeKind.AssertTrap);
+  node.argument = this.parseField();
+  node.message = this.parseLiteral();
+  return (node);
+}
+
+export function parseAssertReturn() {
+  this.expect(KK.ASSERT_RETURN);
+  let node = this.createNode(NodeKind.AssertReturn);
+  node.invoke = this.parseInvoke();
+  node.argument = this.parseField();
+  return (node);
+}
+
+export function parseCall() {
+  this.expect(KK.CALL);
+  let node = this.createNode(NodeKind.Call);
+  node.id = this.parseLiteral();
+  node.expressions = this.parseFieldList();
+  return (node);
+}
+
+export function parseBreak() {
+  this.expect(KK.BR);
+  let node = this.createNode(NodeKind.Break);
+  node.id = this.parseLiteral();
+  return (node);
+}
+
+export function parseBreakIf() {
+  this.expect(KK.BR_IF);
+  let node = this.createNode(NodeKind.BreakIf);
+  node.id = this.parseLiteral();
+  node.body = this.parseFieldList();
+  return (node);
+}
+
 export function parseBlock() {
   this.expect(KK.BLOCK);
   let node = this.createNode(NodeKind.Block);
+  if (this.isLiteral(this.current)) {
+    node.name = this.parseLiteral();
+  }
+  node.body = this.parseFieldList();
+  return (node);
+}
+
+export function parseLoop() {
+  this.expect(KK.LOOP);
+  let node = this.createNode(NodeKind.Loop);
+  if (this.isLiteral(this.current)) {
+    node.name = this.parseLiteral();
+  }
   node.body = this.parseFieldList();
   return (node);
 }
 
 export function parseExpression() {
-  let type = this.parseTypeLiteral();
+  let type = this.parseLiteral();
   this.expect(PP.DOT);
   if (this.eat(KK.CONST)) {
     let node = this.createNode(NodeKind.Constant);
@@ -162,14 +247,27 @@ export function parseExpression() {
     return (node);
   }
   if (this.isOperator(this.current)) {
-    let node = this.createNode(NodeKind.Binary);
+    let isUnary = this.isUnaryOperator(this.current);
+    let isLoad = this.isLoadOperator(this.current);
+    let isStore = !isLoad && this.isStoreOperator(this.current);
+    let node = this.createNode(isUnary ? NodeKind.Unary : NodeKind.Binary);
     node.operator = this.current.value;
     this.next();
-    node.left = this.parseField();
-    node.right = this.parseField();
+    if (isStore || isLoad) {
+      node.argument = this.parseField();
+      if (this.current.kind === PP.LPAREN) {
+        node.offset = this.parseField();
+      }
+    }
+    else if (isUnary) {
+      node.argument = this.parseField();
+    } else {
+      if (this.peek(PP.LPAREN)) node.left = this.parseField();
+      if (this.peek(PP.LPAREN)) node.right = this.parseField();
+    }
     return (node);
   } else {
-    throw new Error(`Sth went prty wrong bru`);
+    this.throw(`Sth went prty wrong bru`, this.current);
   }
 }
 
@@ -184,7 +282,9 @@ export function parseSetLocal() {
   this.expect(KK.SET_LOCAL);
   let node = this.createNode(NodeKind.SetLocal);
   node.id = this.parseLiteral();
-  node.argument = this.parseField();
+  if (this.peek(PP.LPAREN)) {
+    node.argument = this.parseField();
+  }
   return (node);
 }
 
@@ -217,26 +317,38 @@ export function parseLocal() {
   this.expect(KK.LOCAL);
   let node = this.createNode(NodeKind.Local);
   node.name = this.parseLiteral();
-  node.type = this.parseTypeLiteral();
+  node.type = this.parseLiteral();
   return (node);
 }
 
 export function parseFunction() {
   this.expect(KK.FUNC);
   let node = this.createNode(NodeKind.Function);
-  node.name = this.parseLiteral();
+  // TODO: is this really export?
+  if (this.peek(TT.StringLiteral)) {
+    node.export = this.parseLiteral();
+  }
+  if (this.isLiteral(this.current)) {
+    node.name = this.parseLiteral();
+  }
   while (!this.peek(PP.RPAREN)) {
     this.expect(PP.LPAREN);
     // parameter
     if (this.eat(KK.PARAM)) {
       let param = this.createNode(NodeKind.Parameter);
       param.name = this.parseLiteral();
-      param.type = this.parseTypeLiteral();
+      // optional
+      if (this.isLiteral(this.current)) {
+        param.type = this.parseLiteral();
+      }
       node.args.push(param);
     }
     // func result type
     else if (this.eat(KK.RESULT)) {
-      node.result = this.parseTypeLiteral();
+      node.result = this.parseLiteral();
+    }
+    else if (this.eat(KK.EXPORT)) {
+      node.export = this.parseLiteral();
     }
     // func body
     else {
@@ -263,7 +375,11 @@ export function parseMemory() {
 
 export function parseImport() {
   this.expect(KK.IMPORT);
-  console.log(this.current);
+  let node = this.createNode(NodeKind.Import);
+  if (this.isStringLiteral(this.current)) {
+    node.name = this.parseLiteral();
+  }
+  return (node);
 }
 
 export function parseExport() {
@@ -275,37 +391,5 @@ export function parseExport() {
   if (this.peek(TT.Identifier)) {
     node.id = this.parseLiteral();
   }
-  return (node);
-}
-
-export function parseLiteral() {
-  let kind = this.current.kind;
-  if (
-    !this.peek(TT.Identifier) &&
-    !this.peek(TT.StringLiteral) &&
-    !this.peek(TT.NumericLiteral)
-  ) throw new Error(`Invalid literal token ${getNameByLabel(kind)}`);
-  let node = this.createNode(NodeKind.Literal);
-  let value = this.current.value;
-  let isDollarSigned = value.charCodeAt(0) === 36;
-  node.type = kind;
-  node.raw = value;
-  node.value = (
-    node.type === TT.NumericLiteral ? parseFloat(value) :
-    isDollarSigned ? value.substring(1) : value
-  );
-  this.next();
-  return (node);
-}
-
-export function parseTypeLiteral() {
-  let token = this.current;
-  let kind = token.kind;
-  let node = this.createNode(NodeKind.TypeLiteral);
-  if (!this.isTypeLiteral(token)) {
-    throw new Error(`Invalid node literal type ${getNameByLabel(kind)}`);
-  }
-  node.value = getNameByLabel(kind);
-  this.next();
   return (node);
 }

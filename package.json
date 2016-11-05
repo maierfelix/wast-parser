@@ -1,6 +1,6 @@
 {
   "name": "wast-parser",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "WAST parser",
   "license": "GNU",
   "repository": {
@@ -17,6 +17,7 @@
     "url": "https://github.com/maierfelix/wast-parser/issues"
   },
   "scripts": {
+    "test": "babel-node --presets=es2015 test/index.js",
     "start": "babel-node --presets=es2015 src/index.js"
   },
   "engines": {

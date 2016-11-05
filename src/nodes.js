@@ -78,6 +78,18 @@ export default class Node {
     );
   }
 
+  static get Call() {
+    return (
+      class Call {
+        constructor() {
+          this.kind = Kind.Call;
+          this.id = null;
+          this.expressions = null;
+        }
+      }
+    );
+  }
+
   static get Block() {
     return (
       class Block {
@@ -85,6 +97,40 @@ export default class Node {
           this.kind = Kind.Block;
           this.id = null;
           this.body = null;
+        }
+      }
+    );
+  }
+
+  static get Loop() {
+    return (
+      class Loop {
+        constructor() {
+          this.kind = Kind.Loop;
+          this.body = null;
+        }
+      }
+    );
+  }
+
+  static get Break() {
+    return (
+      class Break {
+        constructor() {
+          this.kind = Kind.Break;
+          this.id = null;
+        }
+      }
+    );
+  }
+
+  static get BreakIf() {
+    return (
+      class BreakIf {
+        constructor() {
+          this.kind = Kind.BreakIf;
+          this.id = null;
+          this.condition = null;
         }
       }
     );
@@ -120,6 +166,17 @@ export default class Node {
           this.kind = Kind.Local;
           this.name = null;
           this.type = null;
+        }
+      }
+    );
+  }
+
+  static get Unary() {
+    return (
+      class Unary {
+        constructor() {
+          this.kind = Kind.Unary;
+          this.argument = null;
         }
       }
     );
@@ -188,6 +245,17 @@ export default class Node {
     );
   }
 
+  static get Import() {
+    return (
+      class Import {
+        constructor() {
+          this.kind = Kind.Import;
+          this.name = null;
+        }
+      }
+    );
+  }
+
   static get Parameter() {
     return (
       class Parameter {
@@ -195,6 +263,41 @@ export default class Node {
           this.kind = Kind.Parameter;
           this.name = null;
           this.type = null;
+        }
+      }
+    );
+  }
+
+  static get Invoke() {
+    return (
+      class Invoke {
+        constructor() {
+          this.kind = Kind.Invoke;
+          this.name = null;
+        }
+      }
+    );
+  }
+
+  static get AssertReturn() {
+    return (
+      class AssertReturn {
+        constructor() {
+          this.kind = Kind.AssertReturn;
+          this.invoke = null;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get AssertTrap() {
+    return (
+      class AssertTrap {
+        constructor() {
+          this.kind = Kind.AssertTrap;
+          this.message = null;
+          this.argument = null;
         }
       }
     );

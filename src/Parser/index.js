@@ -13,6 +13,7 @@ import {
 import Node from "../nodes";
 
 import * as parse from "./parse";
+import * as literal from "./literal";
 
 export default class Parser {
 
@@ -71,8 +72,13 @@ export default class Parser {
     if (this.peek(kind)) {
       this.next();
     } else {
-      throw new Error(`Expected ${getNameByLabel(kind)} but got ${getNameByLabel(this.current.kind)}`);
+      this.throw(`Expected ${getNameByLabel(kind)} but got ${getNameByLabel(this.current.kind)}`, this.current);
     }
+  }
+
+  throw(msg, token) {
+    let range = token.range;
+    throw new Error(msg + ` at ${range.line}:${range.start}`);
   }
 
   createNode(kind) {
@@ -114,7 +120,59 @@ export default class Parser {
       kind === KK.GT_U ||
       kind === KK.GE ||
       kind === KK.GE_S ||
-      kind === KK.GE_U
+      kind === KK.GE_U ||
+      this.isUnaryOperator(token)
+    );
+  }
+
+  isUnaryOperator(token) {
+    let kind = token.kind;
+    return (
+      kind === KK.NEG ||
+      kind === KK.COPYSIGN ||
+      kind === KK.CEIL ||
+      kind === KK.FLOOR ||
+      kind === KK.TRUNC ||
+      kind === KK.NEAREST ||
+      kind === KK.CLZ ||
+      kind === KK.POPCNT ||
+      kind === KK.EQZ ||
+      kind === KK.SQRT ||
+      kind === KK.MIN ||
+      kind === KK.MAX ||
+      kind === KK.ABS ||
+      this.isLoadOperator(token) ||
+      this.isStoreOperator(token)
+    );
+  }
+
+  isLoadOperator(token) {
+    let kind = token.kind;
+    return (
+      kind === KK.LOAD ||
+      kind === KK.LOAD8 ||
+      kind === KK.LOAD8_S ||
+      kind === KK.LOAD8_U ||
+      kind === KK.LOAD16 ||
+      kind === KK.LOAD16_S ||
+      kind === KK.LOAD16_U ||
+      kind === KK.LOAD32 ||
+      kind === KK.LOAD32_S ||
+      kind === KK.LOAD32_U ||
+      kind === KK.LOAD64 ||
+      kind === KK.LOAD64_S ||
+      kind === KK.LOAD64_U
+    );
+  }
+
+  isStoreOperator(token) {
+    let kind = token.kind;
+    return (
+      kind === KK.STORE ||
+      kind === KK.STORE8 ||
+      kind === KK.STORE16 ||
+      kind === KK.STORE32 ||
+      kind === KK.STORE64
     );
   }
 
@@ -128,6 +186,29 @@ export default class Parser {
     );
   }
 
+  isLiteral(token) {
+    let kind = token.kind;
+    return (
+      kind === TT.Identifier ||
+      kind === TT.NumericLiteral ||
+      this.isStringLiteral(token) ||
+      this.isTypeLiteral(token)
+    );
+  }
+
+  isStringLiteral(token) {
+    return (
+      token.kind === TT.StringLiteral
+    );
+  }
+
+  isDollarSigned(token) {
+    return (
+      token.value.charCodeAt(0) === 36
+    );
+  }
+
 }
 
 inherit(Parser, parse);
+inherit(Parser, literal);

@@ -23,17 +23,23 @@ class Token {
 export default class Lexer {
 
   constructor() {
-    this.idx = -1;
-    this.line = 1;
+    this.idx = 0;
+    this.line = 0;
     this.column = 0;
     this.out = [];
     this.src = null;
     this.length = 0;
   }
 
-  lex(src) {
-    this.out = [];
+  reset() {
     this.idx = -1;
+    this.line = 1;
+    this.column = 0;
+    this.out = [];
+  }
+
+  lex(src) {
+    this.reset();
     this.src = src;
     this.length = src.length;
     let cc = 0;
@@ -54,11 +60,11 @@ export default class Lexer {
 
   scanToken(cc) {
     // alpha most common, so placed here
-    if (this.isAlpha(cc) || cc === 36) {
+    if (this.isAlpha(cc) || this.isDollar(cc)) {
       this.scanAlpha(cc);
     }
     // numeric, allow dollar sign at begin
-    else if (this.isNumeric(cc) || this.isNumericPreSign(cc) || cc === 36) {
+    else if (this.isNumeric(cc) || this.isNumericPreSign(cc) || this.isDollar(cc)) {
       this.scanDigit(cc);
     }
     // punctuator
@@ -96,7 +102,7 @@ export default class Lexer {
     let isHex = this.src[this.idx+1] === "x" ? true && ++this.idx : false;
     let dotCounter = 0;
     while (cc = this.next()) {
-      if (!this.isDigit(cc)) {
+      if (!this.isDigit(cc) && !this.isNumericPreSign(cc) && cc !== 101) {
         // allow one dot for non hex digits
         if (this.isDot(cc) && !isHex && dotCounter <= 0) {
           dotCounter++;
@@ -136,6 +142,7 @@ export default class Lexer {
     while (cc = this.next()) {
       if (this.isLineTerminator(cc)) break;
     };
+    this.line++;
     this.idx--;
   }
 
@@ -169,6 +176,12 @@ export default class Lexer {
   isDot(cc) {
     return (
       cc === 46
+    );
+  }
+
+  isDollar(cc) {
+    return (
+      cc === 36
     );
   }
 
