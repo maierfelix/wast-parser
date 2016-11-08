@@ -374,7 +374,7 @@ export function parseExpression() {
     let isLoad = this.isLoadOperator(this.current);
     let isStore = !isLoad && this.isStoreOperator(this.current);
     let node = this.createNode(isUnary ? NodeKind.Unary : NodeKind.Binary);
-    node.operator = this.current.value;
+    node.operator = KK[this.current.value];
     this.next();
     if (isStore || isLoad) {
       node.argument = this.parseField();

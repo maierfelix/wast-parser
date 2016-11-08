@@ -23,8 +23,9 @@ let input = fs.readFileSync(process.cwd() + "/" + path, "utf8");
 ((str) => {
 
   let ast = parse(str);
-  Binary.write(ast);
+  let out = Binary.write(ast);
   //fs.writeFileSync(path.replace("wast", "json"), JSON.stringify(ast, null, 2), "utf8");
+  fs.writeFileSync(path.replace("wast", "wasm"), out, "binary");
 
 })(input);
 
