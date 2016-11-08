@@ -1,5 +1,6 @@
 import Lexer from "./Lexer";
 import Parser from "./Parser";
+import Binary from "./Binary";
 
 import * as labels from "./labels";
 
@@ -22,8 +23,8 @@ let input = fs.readFileSync(process.cwd() + "/" + path, "utf8");
 ((str) => {
 
   let ast = parse(str);
-  //console.log(ast);
-  fs.writeFileSync(path.replace("wast", "json"), JSON.stringify(ast, null, 2), "utf8");
+  Binary.write(ast);
+  //fs.writeFileSync(path.replace("wast", "json"), JSON.stringify(ast, null, 2), "utf8");
 
 })(input);
 

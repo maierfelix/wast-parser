@@ -26,7 +26,7 @@ export default class Lexer {
     this.idx = 0;
     this.line = 0;
     this.column = 0;
-    this.out = [];
+    this.tokens = [];
     this.src = null;
     this.length = 0;
   }
@@ -35,7 +35,7 @@ export default class Lexer {
     this.idx = -1;
     this.line = 1;
     this.column = 0;
-    this.out = [];
+    this.tokens = [];
   }
 
   lex(src) {
@@ -55,7 +55,7 @@ export default class Lexer {
       this.scanToken(cc);
     };
     this.pushEOF();
-    return (this.out);
+    return (this.tokens);
   }
 
   scanToken(cc) {
@@ -93,6 +93,17 @@ export default class Lexer {
     let value = this.src.slice(start, this.idx);
     let kind = this.isKeyword(value) ? KeywordKind[value] : TokenKind.Identifier;
     this.column--;
+    // nan and infinity special cases
+    if (value === "nan" || value === "infinity") {
+      kind = TokenKind.NumericLiteral;
+      let idx = this.tokens.length - 1;
+      let prev = this.tokens[idx];
+      // inject presign
+      if (prev.value === "-" || prev.value === "+") {
+        this.tokens.splice(idx, 1);
+        value = prev.value + value;
+      }
+    }
     this.pushToken(kind, start, value);
     this.idx--;
   }
@@ -102,11 +113,13 @@ export default class Lexer {
     let isHex = this.src[this.idx+1] === "x" ? true && ++this.idx : false;
     let dotCounter = 0;
     while (cc = this.next()) {
-      if (!this.isDigit(cc) && !this.isNumericPreSign(cc) && cc !== 101) {
-        // allow one dot for non hex digits
-        if (this.isDot(cc) && !isHex && dotCounter <= 0) {
-          dotCounter++;
-        }
+      if (
+        !this.isDigit(cc) &&
+        !this.isNumericPreSign(cc) &&
+        !this.isHexAlpha(cc) &&
+        cc !== 101 && cc !== 112
+      ) {
+        if (this.isDot(cc) && !isHex && dotCounter <= 0) dotCounter++;
         else break;
       }
     };
@@ -191,6 +204,12 @@ export default class Lexer {
     );
   }
 
+  isHexAlpha(cc) {
+    return (
+      cc >= 97 && cc <= 102
+    );
+  }
+
   isAlpha(cc) {
     return (
       cc >= 65 && cc <= 90 ||
@@ -249,7 +268,7 @@ export default class Lexer {
     let end = begin + length;
     let range = new Range(this.line, begin-1, end);
     let token = new Token(kind, value, range);
-    this.out.push(token);
+    this.tokens.push(token);
   }
 
   pushEOF() {

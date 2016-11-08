@@ -11,6 +11,7 @@ import {
 } from "../utils";
 
 import Node from "../nodes";
+import Scope from "./scope";
 
 import * as parse from "./parse";
 import * as literal from "./literal";
@@ -20,6 +21,7 @@ export default class Parser {
   constructor() {
     this.idx = 0;
     this.limit = 0;
+    this.scope = null;
     this.tokens = null;
     this.current = null;
   }
@@ -29,7 +31,7 @@ export default class Parser {
     this.current = tokens[0];
     this.limit = tokens.length;
     this.tokens = tokens;
-    return (this.parseModule());
+    return (this.parseProgram());
   }
 
   eat(kind) {
@@ -87,6 +89,22 @@ export default class Parser {
     return (node);
   }
 
+  /**
+   * @param {Node} node
+   */
+  pushScope(node) {
+    let scope = new Scope(node, this.scope);
+    if (node.kind === NodeKind.Program) {
+      scope = this.global;
+    }
+    node.context = scope;
+    this.scope = node.context;
+  }
+
+  popScope() {
+    this.scope = this.scope.parent;
+  }
+
   // TODO: make type dependant
   isOperator(token) {
     let kind = token.kind;
@@ -133,14 +151,27 @@ export default class Parser {
       kind === KK.CEIL ||
       kind === KK.FLOOR ||
       kind === KK.TRUNC ||
+      kind === KK.TRUNC_S ||
+      kind === KK.TRUNC_U ||
       kind === KK.NEAREST ||
       kind === KK.CLZ ||
+      kind === KK.CTZ ||
       kind === KK.POPCNT ||
       kind === KK.EQZ ||
       kind === KK.SQRT ||
       kind === KK.MIN ||
       kind === KK.MAX ||
       kind === KK.ABS ||
+      kind === KK.CONVERT ||
+      kind === KK.CONVERT_S ||
+      kind === KK.CONVERT_U ||
+      kind === KK.EXTEND ||
+      kind === KK.EXTEND_S ||
+      kind === KK.EXTEND_U ||
+      kind === KK.DEMOTE ||
+      kind === KK.PROMOTE ||
+      kind === KK.REINTERPRET ||
+      kind === KK.WRAP ||
       this.isLoadOperator(token) ||
       this.isStoreOperator(token)
     );

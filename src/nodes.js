@@ -6,6 +6,17 @@ export default class Node {
 
   constructor() {}
 
+  static get Program() {
+    return (
+      class Program {
+        constructor() {
+          this.kind = Kind.Program;
+          this.body = null;
+        }
+      }
+    );
+  }
+
   static get Module() {
     return (
       class Module {
@@ -49,6 +60,28 @@ export default class Node {
           this.condition = null;
           this.consequent = null;
           this.alternate = null;
+        }
+      }
+    );
+  }
+
+  static get Else() {
+    return (
+      class Else {
+        constructor() {
+          this.kind = Kind.Else;
+          this.body = null;
+        }
+      }
+    );
+  }
+
+  static get Then() {
+    return (
+      class Then {
+        constructor() {
+          this.kind = Kind.Then;
+          this.argument = null;
         }
       }
     );
@@ -107,6 +140,8 @@ export default class Node {
       class Loop {
         constructor() {
           this.kind = Kind.Loop;
+          this.id = null;
+          this.type = null;
           this.body = null;
         }
       }
@@ -131,6 +166,28 @@ export default class Node {
           this.kind = Kind.BreakIf;
           this.id = null;
           this.condition = null;
+        }
+      }
+    );
+  }
+
+  static get Result() {
+    return (
+      class Result {
+        constructor() {
+          this.kind = Kind.Result;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get BreakTable() {
+    return (
+      class BreakTable {
+        constructor() {
+          this.kind = Kind.BreakTable;
+          this.body = null;
         }
       }
     );
@@ -268,12 +325,76 @@ export default class Node {
     );
   }
 
+  static get GrowMemory() {
+    return (
+      class GrowMemory {
+        constructor() {
+          this.kind = Kind.GrowMemory;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get ResizeMemory() {
+    return (
+      class ResizeMemory {
+        constructor() {
+          this.kind = Kind.ResizeMemory;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get CurrentMemory() {
+    return (
+      class CurrentMemory {
+        constructor() {
+          this.kind = Kind.CurrentMemory;
+        }
+      }
+    );
+  }
+
+  static get Unreachable() {
+    return (
+      class Unreachable {
+        constructor() {
+          this.kind = Kind.Unreachable;
+        }
+      }
+    );
+  }
+
+  static get Nop() {
+    return (
+      class Nop {
+        constructor() {
+          this.kind = Kind.Nop;
+        }
+      }
+    );
+  }
+
+  static get Drop() {
+    return (
+      class Drop {
+        constructor() {
+          this.kind = Kind.Drop;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
   static get Invoke() {
     return (
       class Invoke {
         constructor() {
           this.kind = Kind.Invoke;
           this.name = null;
+          this.body = null;
         }
       }
     );
@@ -296,7 +417,42 @@ export default class Node {
       class AssertTrap {
         constructor() {
           this.kind = Kind.AssertTrap;
+          this.invoke = null;
           this.message = null;
+        }
+      }
+    );
+  }
+
+  static get AssertInvalid() {
+    return (
+      class AssertInvalid {
+        constructor() {
+          this.kind = Kind.AssertInvalid;
+          this.message = null;
+          this.argument = null;
+        }
+      }
+    );
+  }
+
+  static get Global() {
+    return (
+      class Global {
+        constructor() {
+          this.kind = Kind.Global;
+          this.body = null;
+        }
+      }
+    );
+  }
+
+  static get Type() {
+    return (
+      class Type {
+        constructor() {
+          this.kind = Kind.Type;
+          this.id = null;
           this.argument = null;
         }
       }

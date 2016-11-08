@@ -8,13 +8,21 @@ export let PunctuatorKind = {};
 ((Label) => {
 
   Label[Label["Module"] = ++idx] = "Module";
+  Label[Label["Program"] = ++idx] = "Program";
+
+  Label[Label["Global"] = ++idx] = "Global";
   Label[Label["Literal"] = ++idx] = "Literal";
   Label[Label["TypeLiteral"] = ++idx] = "TypeLiteral";
 
   Label[Label["If"] = ++idx] = "If";
+  Label[Label["Else"] = ++idx] = "Else";
+  Label[Label["Then"] = ++idx] = "Then";
+  Label[Label["Nop"] = ++idx] = "Nop";
+  Label[Label["Drop"] = ++idx] = "Drop";
   Label[Label["Loop"] = ++idx] = "Loop";
   Label[Label["Break"] = ++idx] = "Break";
   Label[Label["BreakIf"] = ++idx] = "BreakIf";
+  Label[Label["BreakTable"] = ++idx] = "BreakTable";
   Label[Label["Block"] = ++idx] = "Block";
   Label[Label["Import"] = ++idx] = "Import";
   Label[Label["Export"] = ++idx] = "Export";
@@ -32,6 +40,7 @@ export let PunctuatorKind = {};
   Label[Label["Sequence"] = ++idx] = "Sequence";
   Label[Label["Assignment"] = ++idx] = "Assignment";
 
+  Label[Label["Result"] = ++idx] = "Result";
   Label[Label["Local"] = ++idx] = "Local";
   Label[Label["Memory"] = ++idx] = "Memory";
   Label[Label["Constant"] = ++idx] = "Constant";
@@ -42,6 +51,15 @@ export let PunctuatorKind = {};
   Label[Label["Invoke"] = ++idx] = "Invoke";
   Label[Label["AssertTrap"] = ++idx] = "AssertTrap";
   Label[Label["AssertReturn"] = ++idx] = "AssertReturn";
+  Label[Label["AssertInvalid"] = ++idx] = "AssertInvalid";
+
+  Label[Label["Unreachable"] = ++idx] = "Unreachable";
+
+  Label[Label["Type"] = ++idx] = "Type";
+
+  Label[Label["GrowMemory"] = ++idx] = "GrowMemory";
+  Label[Label["ResizeMemory"] = ++idx] = "ResizeMemory";
+  Label[Label["CurrentMemory"] = ++idx] = "CurrentMemory";
 
 })(NodeKind);
 
@@ -69,15 +87,17 @@ export let PunctuatorKind = {};
 ((Label) => {
 
   Label[Label["func"] = ++idx] = "FUNC";
+  Label[Label["global"] = ++idx] = "GLOBAL";
   Label[Label["const"] = ++idx] = "CONST";
   Label[Label["result"] = ++idx] = "RESULT";
   Label[Label["module"] = ++idx] = "MODULE";
   Label[Label["import"] = ++idx] = "IMPORT";
   Label[Label["export"] = ++idx] = "EXPORT";
+  Label[Label["type"] = ++idx] = "TYPE";
   Label[Label["invoke"] = ++idx] = "INVOKE";
   Label[Label["if"] = ++idx] = "IF";
-  Label[Label["then"] = ++idx] = "THEN";
   Label[Label["else"] = ++idx] = "ELSE";
+  Label[Label["then"] = ++idx] = "THEN";
 
   Label[Label["nop"] = ++idx] = "NOP";
   Label[Label["drop"] = ++idx] = "DROP";
@@ -113,9 +133,12 @@ export let PunctuatorKind = {};
   Label[Label["memory"] = ++idx] = "MEMORY";
   Label[Label["address_of"] = ++idx] = "ADDRESS_OF";
   Label[Label["grow_memory"] = ++idx] = "GROW_MEMORY";
+  Label[Label["resize_memory"] = ++idx] = "RESIZE_MEMORY";
   Label[Label["current_memory"] = ++idx] = "CURRENT_MEMORY";
 
+  Label[Label["assert_trap"] = ++idx] = "ASSERT_TRAP";
   Label[Label["assert_return"] = ++idx] = "ASSERT_RETURN";
+  Label[Label["assert_invalid"] = ++idx] = "ASSERT_INVALID";
 
   Label[Label["i32"] = ++idx] = "I32";
   Label[Label["i64"] = ++idx] = "I64";
@@ -182,14 +205,27 @@ export let PunctuatorKind = {};
   Label[Label["ceil"] = ++idx] = "CEIL";
   Label[Label["floor"] = ++idx] = "FLOOR";
   Label[Label["trunc"] = ++idx] = "TRUNC";
+  Label[Label["trunc_s"] = ++idx] = "TRUNC_S";
+  Label[Label["trunc_u"] = ++idx] = "TRUNC_U";
   Label[Label["nearest"] = ++idx] = "NEAREST";
   Label[Label["clz"] = ++idx] = "CLZ";
+  Label[Label["ctz"] = ++idx] = "CTZ";
   Label[Label["popcnt"] = ++idx] = "POPCNT";
   Label[Label["eqz"] = ++idx] = "EQZ";
   Label[Label["sqrt"] = ++idx] = "SQRT";
   Label[Label["min"] = ++idx] = "MIN";
   Label[Label["max"] = ++idx] = "MAX";
   Label[Label["abs"] = ++idx] = "ABS";
+  Label[Label["convert"] = ++idx] = "CONVERT";
+  Label[Label["convert_s"] = ++idx] = "CONVERT_S";
+  Label[Label["convert_u"] = ++idx] = "CONVERT_U";
+  Label[Label["extend"] = ++idx] = "EXTEND";
+  Label[Label["extend_s"] = ++idx] = "EXTEND_S";
+  Label[Label["extend_u"] = ++idx] = "EXTEND_U";
+  Label[Label["demote"] = ++idx] = "DEMOTE";
+  Label[Label["promote"] = ++idx] = "PROMOTE";
+  Label[Label["reinterpret"] = ++idx] = "REINTERPRET";
+  Label[Label["wrap"] = ++idx] = "WRAP";
 
   generateKeyAccess(KeywordKind);
 
